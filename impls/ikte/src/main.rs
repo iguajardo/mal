@@ -1,26 +1,32 @@
 use std::io::{self, Write, stdin};
 
 fn main() {
+    let mut line = String::new();
     loop {
         print!("> ");
-        io::stdout().flush().unwrap();
+        if io::stdout().flush().is_err() {
+            eprintln!("Failed to flush stdout");
+            break;
+        }
 
-        let mut line = String::new();
+        line.clear();
         match stdin().read_line(&mut line) {
+            // complex match with if. If condition not pass, continue
+            Ok(n) if n == 0 => {
+                println!("EOF received.");
+                break;
+            }
             Ok(_) => {
-                let trimmed = line.trim();
-                if trimmed == "quit" {
+                if line.trim() == "quit" {
                     println!("exit.");
                     break;
                 }
+                println!("this was received <{line}>");
             }
             Err(err) => {
                 eprintln!("Error reading from stdin: <{err}>");
                 break;
             }
         }
-
-        let line = line.trim();
-        println!("this was received <{line}>");
     }
 }
